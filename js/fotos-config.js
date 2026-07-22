@@ -46,7 +46,7 @@
 
 const FOTOS = {
   // "passalites-murelia": "https://upload.wikimedia.org/wikipedia/commons/...",
-  "puma-concolor": "https://www.inaturalist.org/taxa/42007-Puma-concolor",
+  "puma-concolor": "https://www.inaturalist.org/photos/9834553",
 };
 
 /* También puedes poner aquí el crédito/autor de cada foto (opcional).
