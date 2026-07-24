@@ -57,7 +57,7 @@ const FOTOS = {
 //};
 
 const CREDITOS_FOTOS = {
-  "puma-concolor": 'Foto: (c) pfaucher – (<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC</a>) - (<a href="https://www.inaturalist.org/taxa/1647420-Dasypus-fenestratus" target="_blank" rel="noopener noreferrer">Fuente</a>)',
+  "puma-concolor": 'Foto: (c) pfaucher – <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC</a> - <a href="https://www.inaturalist.org/taxa/1647420-Dasypus-fenestratus" target="_blank" rel="noopener noreferrer">Fuente</a>',
   "dasypus-fenestratus": 'Foto: (c) johnmeikle – algunos derechos reservados (<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC</a>)',
 };
 
