@@ -55,6 +55,11 @@ const estado = {
   departamentoSeleccionado: null, // depto elegido en el mapa general (o null)
   mapaGeneral: null,      // referencia al mapa Leaflet de la portada
   mapaFichaActual: null,  // referencia al mapa Leaflet dentro de la ficha abierta
+  lightbox: {
+    slug: null,           // especie cuyas fotos se están viendo en el lightbox
+    fotos: [],            // arreglo de fotos { url, credito } de esa especie
+    indice: 0,            // foto actualmente mostrada
+  },
 };
 
 document.addEventListener('DOMContentLoaded', iniciar);
@@ -100,6 +105,9 @@ async function iniciar() {
     if (evento.target.id === 'modal-fondo') cerrarFicha();
   });
   document.addEventListener('keydown', (evento) => {
+    const lightboxAbierto = document.getElementById('modal-lightbox')?.classList.contains('visible');
+    if (lightboxAbierto && evento.key === 'ArrowRight') return fotoSiguiente();
+    if (lightboxAbierto && evento.key === 'ArrowLeft') return fotoAnterior();
     if (evento.key === 'Escape') {
       cerrarLightbox();
       cerrarFicha();
@@ -554,11 +562,44 @@ document.addEventListener('click', (evento) => {
 /** Abre el lightbox (foto en grande) para la foto `indice` de la especie `slug`. */
 async function abrirLightbox(slug, indice) {
   const fotos = await obtenerFotos(slug);
+  if (!fotos.length) return;
+  estado.lightbox.slug = slug;
+  estado.lightbox.fotos = fotos;
+  estado.lightbox.indice = indice;
+  mostrarFotoLightboxActual();
+  document.getElementById('modal-lightbox').classList.add('visible');
+}
+
+/** Pinta en el lightbox la foto que indica estado.lightbox.indice. */
+function mostrarFotoLightboxActual() {
+  const { fotos, indice } = estado.lightbox;
   const foto = fotos[indice];
   if (!foto) return;
   document.getElementById('lightbox-img').src = foto.url;
   document.getElementById('lightbox-credito').innerHTML = foto.credito || '';
-  document.getElementById('modal-lightbox').classList.add('visible');
+  document.getElementById('lightbox-contador').textContent =
+    fotos.length > 1 ? `${indice + 1} / ${fotos.length}` : '';
+
+  // Oculta las flechas cuando solo hay una foto, o cuando ya no se puede
+  // avanzar/retroceder más (no es un carrusel circular).
+  document.getElementById('lightbox-anterior').style.visibility = indice > 0 ? 'visible' : 'hidden';
+  document.getElementById('lightbox-siguiente').style.visibility = indice < fotos.length - 1 ? 'visible' : 'hidden';
+}
+
+/** Muestra la foto siguiente dentro del mismo lightbox, sin cerrarlo. */
+function fotoSiguiente() {
+  if (estado.lightbox.indice < estado.lightbox.fotos.length - 1) {
+    estado.lightbox.indice++;
+    mostrarFotoLightboxActual();
+  }
+}
+
+/** Muestra la foto anterior dentro del mismo lightbox, sin cerrarlo. */
+function fotoAnterior() {
+  if (estado.lightbox.indice > 0) {
+    estado.lightbox.indice--;
+    mostrarFotoLightboxActual();
+  }
 }
 
 function cerrarLightbox() {

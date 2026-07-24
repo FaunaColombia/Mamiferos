@@ -153,8 +153,11 @@
 <!-- ======================= MODAL: LIGHTBOX (foto en grande) ======================= -->
 <div class="modal-lightbox" id="modal-lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada">
   <button type="button" class="lightbox__cerrar" onclick="cerrarLightbox()" aria-label="Cerrar foto ampliada">&times;</button>
+  <button type="button" id="lightbox-anterior" class="lightbox__flecha lightbox__flecha--izq" onclick="fotoAnterior()" aria-label="Foto anterior">&#8249;</button>
   <img id="lightbox-img" src="" alt="">
+  <button type="button" id="lightbox-siguiente" class="lightbox__flecha lightbox__flecha--der" onclick="fotoSiguiente()" aria-label="Foto siguiente">&#8250;</button>
   <p id="lightbox-credito" class="lightbox__credito"></p>
+  <span id="lightbox-contador" class="lightbox__contador"></span>
 </div>
 
 <!-- ======================= SCRIPTS ======================= -->

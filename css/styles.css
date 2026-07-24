@@ -598,6 +598,37 @@ select:focus-visible, [tabindex]:focus-visible {
 }
 .lightbox__cerrar:hover { background: rgba(207,214,198,0.15); }
 
+.lightbox__flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(35, 40, 31, 0.4);
+  border: 1px solid rgba(207,214,198,0.4);
+  color: var(--paper-raised);
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+}
+.lightbox__flecha:hover { background: rgba(35, 40, 31, 0.7); }
+.lightbox__flecha--izq { left: 16px; }
+.lightbox__flecha--der { right: 16px; }
+
+@media (max-width: 620px) {
+  .lightbox__flecha { width: 38px; height: 38px; font-size: 22px; }
+  .lightbox__flecha--izq { left: 6px; }
+  .lightbox__flecha--der { right: 6px; }
+}
+
+.lightbox__contador {
+  color: var(--canopy);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+}
+
 .ficha__pestanas {
   display: flex;
   border-bottom: 1px solid var(--line);

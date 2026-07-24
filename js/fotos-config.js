@@ -57,8 +57,7 @@
 const FOTOS = {
   "dasypus-fenestratus": [
     "https://inaturalist-open-data.s3.amazonaws.com/photos/69900176/medium.jpg",
-     "https://inaturalist-open-data.s3.amazonaws.com/photos/41464395/medium.jpeg",
-     ],
+  ],
   "puma-concolor": [
     "https://inaturalist-open-data.s3.amazonaws.com/photos/9834553/original.jpg",
   ],
