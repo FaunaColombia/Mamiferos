@@ -122,7 +122,7 @@
       <button type="button" class="ficha__cerrar" id="ficha-cerrar" aria-label="Cerrar ficha">&times;</button>
     </div>
 
-    <div class="ficha__foto" id="ficha-foto" style="position:relative;"></div>
+    <div class="ficha__foto" id="ficha-foto"></div>
 
     <div class="ficha__pestanas" role="tablist">
       <button type="button" class="ficha__pestana activa" data-pestana="general" role="tab">Información general</button>
@@ -148,6 +148,13 @@
       <p class="texto-largo" id="ficha-claves"></p>
     </div>
   </div>
+</div>
+
+<!-- ======================= MODAL: LIGHTBOX (foto en grande) ======================= -->
+<div class="modal-lightbox" id="modal-lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <button type="button" class="lightbox__cerrar" onclick="cerrarLightbox()" aria-label="Cerrar foto ampliada">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <p id="lightbox-credito" class="lightbox__credito"></p>
 </div>
 
 <!-- ======================= SCRIPTS ======================= -->

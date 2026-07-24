@@ -526,15 +526,77 @@ select:focus-visible, [tabindex]:focus-visible {
 
 .ficha__foto {
   width: 100%;
-  height: 260px;
+  min-height: 150px;
   background: var(--paper-dark);
   display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 10px;
+  gap: 8px;
 }
-.ficha__foto img { width: 100%; height: 100%; object-fit: cover; }
 .ficha__foto-vacia { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); text-align: center; padding: 20px; }
+
+.ficha__foto-mosaico {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.ficha__foto-mosaico:hover { transform: translateY(-2px); border-color: var(--forest); }
+
+/* ==========================================================================
+   MODAL — LIGHTBOX (foto en grande)
+   ========================================================================== */
+
+.modal-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 17, 0.9);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  z-index: 200;
+}
+.modal-lightbox.visible { display: flex; }
+
+.modal-lightbox img {
+  max-width: 90%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+
+.lightbox__credito {
+  color: var(--paper-raised);
+  font-size: 0.85rem;
+  margin-top: 14px;
+  text-align: center;
+  max-width: 90%;
+}
+.lightbox__credito a { color: var(--canopy); }
+
+.lightbox__cerrar {
+  position: absolute;
+  top: 20px;
+  right: 26px;
+  background: none;
+  border: 1px solid rgba(207,214,198,0.4);
+  color: var(--paper-raised);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+.lightbox__cerrar:hover { background: rgba(207,214,198,0.15); }
 
 .ficha__pestanas {
   display: flex;

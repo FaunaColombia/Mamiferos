@@ -4,16 +4,24 @@
    AQUÍ es donde agregas las fotografías de cada especie.
    Este es el ÚNICO archivo que necesitas tocar para poner o cambiar fotos.
 
-   Hay DOS formas de poner una foto para una especie. Puedes usar la que
-   prefieras, o combinarlas (una especie con enlace externo, otra con
-   archivo local):
+   Cada especie puede tener VARIAS fotos: por eso cada valor de FOTOS es un
+   ARREGLO de URLs (aunque solo tengas una foto, va dentro de corchetes [ ]).
+   CREDITOS_FOTOS sigue el mismo orden: el crédito en la posición 0
+   corresponde a la foto en la posición 0, el crédito 1 a la foto 1, etc.
+
+   Hay DOS formas de poner fotos para una especie. Puedes usar la que
+   prefieras, o combinarlas (una especie con enlaces externos, otra con
+   archivos locales, o ambas a la vez):
 
    -----------------------------------------------------------------------
-   OPCIÓN 1 — Enlace externo (una URL de internet)
+   OPCIÓN 1 — Enlace externo (una o varias URLs de internet)
    -----------------------------------------------------------------------
    Agrega una línea en el objeto FOTOS de abajo así:
 
-       "passalites-murelia": "https://ejemplo.com/fotos/venado.jpg",
+       "passalites-murelia": [
+         "https://ejemplo.com/fotos/venado-1.jpg",
+         "https://ejemplo.com/fotos/venado-2.jpg",
+       ],
 
    La clave ("passalites-murelia") es el "slug" (identificador) de la
    especie. Lo encuentras en data/especies.json, en el campo "slug" de
@@ -24,36 +32,43 @@
    OPCIÓN 2 — Subir el archivo directamente al repositorio
    -----------------------------------------------------------------------
    1. Guarda tu foto dentro de la carpeta "images/" del proyecto.
-   2. Nombra el archivo exactamente igual al "slug" de la especie, por
-      ejemplo:  images/passalites-murelia.jpg
+   2. Nombra el archivo exactamente igual al "slug" de la especie. Para
+      varias fotos de la misma especie, numéralas así:
+        images/passalites-murelia.jpg     (foto 1)
+        images/passalites-murelia-2.jpg   (foto 2)
+        images/passalites-murelia-3.jpg   (foto 3)
       (formatos aceptados: .jpg, .jpeg, .png, .webp)
-   3. ¡Listo! No necesitas escribir nada en este archivo: app.js primero
-      busca automáticamente "images/<slug>.jpg" (y las otras extensiones)
-      antes de recurrir a la lista de abajo. Si el archivo existe, se usa;
-      si no existe, se prueba con la siguiente opción.
+   3. ¡Listo! No necesitas escribir nada en este archivo: app.js busca
+      automáticamente "images/<slug>.jpg", "images/<slug>-2.jpg", etc.
+      hasta que un número no encuentre archivo.
 
    -----------------------------------------------------------------------
-   ORDEN EN QUE SE BUSCA UNA FOTO (ver la función obtenerFoto en app.js)
+   ORDEN EN QUE SE BUSCAN LAS FOTOS (ver la función obtenerFotos en app.js)
    -----------------------------------------------------------------------
-   1. images/<slug>.jpg / .jpeg / .png / .webp   (archivo subido directamente)
-   2. Una entrada en el objeto FOTOS de aquí abajo (enlace externo)
-   3. Si ninguna existe, la tarjeta y la ficha muestran un espacio vacío
+   1. images/<slug>.jpg / .jpeg / .png / .webp, luego -2, -3... (locales)
+   2. Las entradas del arreglo FOTOS de aquí abajo (enlaces externos)
+   3. Si no hay ninguna, la tarjeta y la ficha muestran un espacio vacío
       con el mensaje "Sin fotografía disponible".
 
-   Puedes borrar todos los ejemplos de aquí abajo — están comentados y no
-   afectan el sitio hasta que quites el "//" y pongas tus propios datos.
+   Todas las fotos encontradas (locales + externas) se muestran juntas en
+   la ficha de la especie, como un mosaico de miniaturas.
    ========================================================================== */
 
 const FOTOS = {
-  "dasypus-fenestratus": "https://inaturalist-open-data.s3.amazonaws.com/photos/69900176/medium.jpg",
-  "puma-concolor": "https://inaturalist-open-data.s3.amazonaws.com/photos/9834553/original.jpg",
+  "dasypus-fenestratus": [
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/69900176/medium.jpg",
+  ],
+  "puma-concolor": [
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/9834553/original.jpg",
+  ],
 };
 const CREDITOS_FOTOS = {
-  "puma-concolor": 'Foto: (c) pfaucher – <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" style="color: white;">CC BY-NC</a> - <a href="https://www.inaturalist.org/taxa/1647420-Dasypus-fenestratus" target="_blank" rel="noopener noreferrer" style="color: white;">Fuente</a>',
-  "dasypus-fenestratus": 'Foto: (c) johnmeikle – algunos derechos reservados (<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" style="color: white;">CC BY-NC</a>)',
+  "puma-concolor": [
+    'Foto: (c) pfaucher – <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" style="color: white;">CC BY-NC</a> - <a href="https://www.inaturalist.org/taxa/1647420-Dasypus-fenestratus" target="_blank" rel="noopener noreferrer" style="color: white;">Fuente</a>',
+  ],
+  "dasypus-fenestratus": [
+    'Foto: (c) johnmeikle – algunos derechos reservados (<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" style="color: white;">CC BY-NC</a>)',
+  ],
 };
-
-
-
 
 

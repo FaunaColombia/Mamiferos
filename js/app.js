@@ -21,18 +21,25 @@
         - crearTarjetaEspecie()
         - cargarSiguienteLote()
      4. FOTOGRAFÍAS
+        - obtenerFotos()
         - obtenerFoto()
         - probarImagenLocal()
      5. FICHA DE ESPECIE (modal)
         - abrirFicha()
         - cerrarFicha()
         - cambiarPestana()
+        - abrirLightbox()
+        - cerrarLightbox()
      6. MAPA GENERAL DE LA PORTADA
         - alternarPanelMapa()
         - manejarClicDepartamento()
 
    CÓMO CAMBIAR CUÁNTAS TARJETAS SE MUESTRAN POR LOTE:
    busca la constante ESPECIES_POR_LOTE aquí abajo.
+
+   CÓMO AGREGAR VARIAS FOTOS A UNA ESPECIE:
+   ver js/fotos-config.js. También puedes poner fotos locales numeradas
+   en la carpeta images/ (slug.jpg, slug-2.jpg, slug-3.jpg...).
    ========================================================================== */
 
 const ESPECIES_POR_LOTE = 60;
@@ -93,8 +100,19 @@ async function iniciar() {
     if (evento.target.id === 'modal-fondo') cerrarFicha();
   });
   document.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Escape') cerrarFicha();
+    if (evento.key === 'Escape') {
+      cerrarLightbox();
+      cerrarFicha();
+    }
   });
+
+  // Conecta el botón de cerrar del lightbox y el clic fuera de la imagen.
+  const lightbox = document.getElementById('modal-lightbox');
+  if (lightbox) {
+    lightbox.addEventListener('click', (evento) => {
+      if (evento.target.id === 'modal-lightbox') cerrarLightbox();
+    });
+  }
 }
 
 /** Descarga y devuelve el arreglo de especies desde data/especies.json. */
@@ -360,28 +378,55 @@ function insigniaAmenaza(codigo) {
 // 4. FOTOGRAFÍAS
 // --------------------------------------------------------------------------
 
-// Recordamos el resultado de cada búsqueda de foto para no repetirla.
+// Recordamos el resultado de cada búsqueda de fotos para no repetirla.
 const _cacheFotos = new Map();
 
 /**
- * Devuelve (de forma asíncrona) la URL utilizable de la foto de una especie,
- * o null si no hay ninguna disponible. Ver también js/fotos-config.js.
- * Orden de búsqueda: archivo local en images/ -> enlace en FOTOS -> nada.
+ * Devuelve (de forma asíncrona) TODAS las fotos disponibles de una especie,
+ * como un arreglo de objetos { url, credito }. Combina:
+ *   1. Fotos locales numeradas en images/ (slug.jpg, slug-2.jpg, slug-3.jpg...)
+ *   2. Fotos externas definidas en js/fotos-config.js (FOTOS y CREDITOS_FOTOS)
+ * Si no hay ninguna, devuelve un arreglo vacío. Ver también js/fotos-config.js.
  */
-async function obtenerFoto(slug) {
+async function obtenerFotos(slug) {
   if (_cacheFotos.has(slug)) return _cacheFotos.get(slug);
 
-  for (const extension of ['jpg', 'jpeg', 'png', 'webp']) {
-    const ruta = `images/${slug}.${extension}`;
-    if (await probarImagenLocal(ruta)) {
-      _cacheFotos.set(slug, ruta);
-      return ruta;
+  const fotos = [];
+
+  // --- 1. Fotos locales numeradas ---
+  let sufijo = '';
+  let contador = 1;
+  while (true) {
+    let encontrada = false;
+    for (const extension of ['jpg', 'jpeg', 'png', 'webp']) {
+      const ruta = `images/${slug}${sufijo}.${extension}`;
+      if (await probarImagenLocal(ruta)) {
+        fotos.push({ url: ruta, credito: null });
+        encontrada = true;
+        break;
+      }
     }
+    if (!encontrada) break;
+    contador++;
+    sufijo = `-${contador}`;
   }
 
-  const urlExterna = typeof FOTOS !== 'undefined' ? FOTOS[slug] : null;
-  _cacheFotos.set(slug, urlExterna || null);
-  return urlExterna || null;
+  // --- 2. Fotos externas (js/fotos-config.js) ---
+  if (typeof FOTOS !== 'undefined' && Array.isArray(FOTOS[slug])) {
+    const creditos = typeof CREDITOS_FOTOS !== 'undefined' ? CREDITOS_FOTOS[slug] : [];
+    FOTOS[slug].forEach((url, i) => {
+      fotos.push({ url, credito: (creditos && creditos[i]) || null });
+    });
+  }
+
+  _cacheFotos.set(slug, fotos);
+  return fotos;
+}
+
+/** Devuelve solo la PRIMERA foto disponible — usada por la cuadrícula de tarjetas. */
+async function obtenerFoto(slug) {
+  const fotos = await obtenerFotos(slug);
+  return fotos.length ? fotos[0].url : null;
 }
 
 /** Comprueba si una imagen existe intentando cargarla en el navegador. */
@@ -409,12 +454,15 @@ async function abrirFicha(slug) {
   document.getElementById('ficha-nombre-comun').textContent = especie.nombreComun || '';
 
   const zonaFoto = document.getElementById('ficha-foto');
-  zonaFoto.innerHTML = '<span class="ficha__foto-vacia">Cargando fotografía…</span>';
-  obtenerFoto(slug).then((url) => {
-    if (url) {
-      const credito = typeof CREDITOS_FOTOS !== 'undefined' ? CREDITOS_FOTOS[slug] : null;
-      zonaFoto.innerHTML = `<img src="${url}" alt="${especie.nombreCientifico}">`;
-      if (credito) zonaFoto.innerHTML += `<span class="ficha__foto-vacia" style="position:absolute;bottom:6px;right:10px;background:rgba(0,0,0,0.5);color:#fff;padding:2px 8px;border-radius:3px;">${credito}</span>`;
+  zonaFoto.innerHTML = '<span class="ficha__foto-vacia">Cargando fotografías…</span>';
+  obtenerFotos(slug).then((fotos) => {
+    if (fotos.length) {
+      zonaFoto.innerHTML = fotos
+        .map(
+          (foto, i) =>
+            `<img src="${foto.url}" alt="${especie.nombreCientifico} - foto ${i + 1}" class="ficha__foto-mosaico" onclick="abrirLightbox('${slug}', ${i})">`
+        )
+        .join('');
     } else {
       zonaFoto.innerHTML = '<span class="ficha__foto-vacia">Sin fotografía disponible.<br>Ver js/fotos-config.js para agregar una.</span>';
     }
@@ -502,6 +550,21 @@ document.addEventListener('click', (evento) => {
   const boton = evento.target.closest('.ficha__pestana');
   if (boton) cambiarPestana(boton.dataset.pestana);
 });
+
+/** Abre el lightbox (foto en grande) para la foto `indice` de la especie `slug`. */
+async function abrirLightbox(slug, indice) {
+  const fotos = await obtenerFotos(slug);
+  const foto = fotos[indice];
+  if (!foto) return;
+  document.getElementById('lightbox-img').src = foto.url;
+  document.getElementById('lightbox-credito').innerHTML = foto.credito || '';
+  document.getElementById('modal-lightbox').classList.add('visible');
+}
+
+function cerrarLightbox() {
+  const lightbox = document.getElementById('modal-lightbox');
+  if (lightbox) lightbox.classList.remove('visible');
+}
 
 // --------------------------------------------------------------------------
 // 6. MAPA GENERAL DE LA PORTADA
